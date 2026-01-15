@@ -1,0 +1,36 @@
+python -m venv .venv
+
+.venv\Scripts\activate
+
+deactivate
+
+pip freeze > requirements.txt
+
+
+
+lo que use para probar el neo4j_service:
+
+# if __name__ == "__main__":
+#         # 1. Instanciar el servicio
+#     service = Neo4jService()
+        
+#     try:
+#         print("--- Probando Conexión ---")
+#             # 2. Probar una consulta simple
+#         skills = service.get_all_skills()
+#         print(f"Habilidades encontradas: {len(skills)}")
+            
+#             # 3. Probar búsqueda de un candidato existente (usa uno de tus datos de prueba)
+#         perfil = service.get_candidate_profile("santiago.rivas@gmail.com")
+#         if perfil:
+#             print(f"Candidato encontrado: {perfil['nombre_completo']}")
+#             print(f"Habilidades: {perfil['habilidades']}")
+#         else:
+#             print("Candidato no encontrado.")
+
+#     except Exception as e:
+#         print(f"Error durante la prueba: {e}")
+#     finally:
+#             # 4. Siempre cerrar la conexión
+#         service.close()
+#         print("--- Conexión cerrada ---")
