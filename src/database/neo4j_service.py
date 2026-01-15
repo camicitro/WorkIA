@@ -51,6 +51,7 @@ class Neo4jService:
         return result[0] if result else None
 
     def get_offer_requirements(self, titulo):
+        #TODO: ver si agrego: meses_min_experiencia: toInteger($detalles.meses_min_experiencia),
         query = """
         MATCH (o:Oferta) WHERE o.titulo CONTAINS $titulo
         OPTIONAL MATCH (o)-[r:REQUIERE]->(h:Habilidad)
@@ -59,6 +60,7 @@ class Neo4jService:
                o.seniority_buscado AS seniority_buscado,
                o.salario_max_usd AS salario,
                o.fecha_publicacion AS fecha_publicacion,
+               o.meses_min_experiencia AS meses_min_experiencia
                o.mult_tecnico AS w_tec,
                o.mult_blando AS w_blan,
                o.mult_experiencia AS w_exp,
@@ -123,6 +125,7 @@ class Neo4jService:
         self.run_query(query, params)
 
     def create_offer(self, titulo, detalles, mults, email_empresa):
+        #TODO: ver si agrego: meses_min_experiencia: toInteger($detalles.meses_min_experiencia),
         query= """
             MATCH (e:Empresa {email: $email_empresa})
             CREATE (o:Oferta {
@@ -131,6 +134,7 @@ class Neo4jService:
                 modalidad: $detalles.modalidad, 
                 seniority_buscado: $detalles.seniority_buscado, 
                 salario_max_usd: $detalles.salario_max_usd,
+                meses_min_experiencia: toInteger($detalles.meses_min_experiencia),
                 fecha_publicacion: date(),
                 mult_tecnico: toFloat($mults.tecnico),
                 mult_blando: toFloat($mults.blando),
@@ -220,3 +224,7 @@ class Neo4jService:
         """
         params = {"email": email, "oferta_titulo": oferta_titulo, "scores": scores}
         self.run_query(query, params)
+
+
+
+#TODO: crear una funcion para actualizar una oferta
