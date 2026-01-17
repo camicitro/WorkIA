@@ -23,7 +23,7 @@ class Neo4jService:
 
 
     # --- CONSULTAR DATOS ---
-    def search_candidates(self, criterio):
+    def get_all_candidates(self, criterio):
         query = """
             MATCH (c:Candidato) 
             WHERE c.nombre CONTAINS $criterio OR c.apellido CONTAINS $criterio
@@ -50,6 +50,24 @@ class Neo4jService:
         result = self.run_query(query, {"email": email})
         return result[0] if result else None
 
+    def get_all_offers(self, title=None, date_from=None, date_to=None):
+        query = """
+            MATCH (o:Oferta)
+                WHERE 1 = 1
+                    AND ($titulo IS NULL OR o.titulo CONTAINS $titulo)
+                    AND ($fecha_desde IS NULL OR o.fecha_publicacion >= date($fecha_desde))
+                    AND ($fecha_hasta IS NULL OR o.fecha_publicacion <= date($fecha_hasta))
+                RETURN o
+                ORDER BY o.fecha_publicacion DESC
+        """
+        params = {
+           "titulo": title,
+            "fecha_desde": date_from,
+            "fecha_hasta": date_to
+        }
+
+        return self.run_query(query, params)
+    
     def get_offer_requirements(self, titulo):
         #TODO: ver si agrego: meses_min_experiencia: toInteger($detalles.meses_min_experiencia),
         query = """
@@ -173,7 +191,7 @@ class Neo4jService:
         # Candidato - POSEE -> Habilidad
         query = """
             MATCH (c:Candidato {email: $email})
-            MATCH (h:Habilidad {nombre: $nombre_habilidad})
+            MERGE (h:Habilidad {nombre: $nombre_habilidad})
             MERGE (c)-[p:POSEE]->(h)
                 SET p.nivel = $nivel, 
                 p.ultimo_uso = date()
@@ -184,7 +202,7 @@ class Neo4jService:
         #Candidato - TRABAJO_EN -> Empresa
         query = """
             MATCH (c:Candidato {email: $email_candidato})
-            MATCH (e:Empresa {email: $email_empresa})
+            MERGE (e:Empresa {email: $email_empresa})
             MERGE (c)-[t:TRABAJO_EN {puesto: $experiencia.puesto}]->(e)
             SET t.fecha_inicio = date($experiencia.fecha_inicio), t.fecha_fin = date($experiencia.fecha_fin)
         """
@@ -199,7 +217,7 @@ class Neo4jService:
         # Oferta - REQUIERE -> Habilidad
         query = """
             MATCH (o:Oferta {titulo: $oferta_titulo})
-            MATCH (h:Habilidad {nombre: $habilidad_nombre})
+            MERGE (h:Habilidad {nombre: $habilidad_nombre})
             MERGE (o)-[r:REQUIERE]->(h)
             SET r.nivel_minimo = $nivel_min, r.es_critica = $es_critica
         """
@@ -227,4 +245,4 @@ class Neo4jService:
 
 
 
-#TODO: crear una funcion para actualizar una oferta
+#TODO: crear una funcion para actualizar una oferta?
