@@ -1,3 +1,4 @@
 .env
 notas_mias.txt
 .venv/
+test.py

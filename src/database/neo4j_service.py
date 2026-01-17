@@ -60,11 +60,11 @@ class Neo4jService:
                o.seniority_buscado AS seniority_buscado,
                o.salario_max_usd AS salario,
                o.fecha_publicacion AS fecha_publicacion,
-               o.meses_min_experiencia AS meses_min_experiencia
+               o.meses_min_experiencia AS meses_min_experiencia,
                o.mult_tecnico AS w_tec,
                o.mult_blando AS w_blan,
                o.mult_experiencia AS w_exp,
-               collect({nombre: h.nombre, nivel_min: r.nivel_minimo, critica: r.es_critica, tipo: h.tipo}) AS requisitos
+               collect({nombre: h.nombre, nivel_minimo: r.nivel_minimo, es_critica: r.es_critica, tipo: h.tipo}) AS requisitos
         """
         result = self.run_query(query, {"titulo": titulo})
         return result[0] if result else None
